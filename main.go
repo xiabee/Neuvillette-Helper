@@ -8,20 +8,19 @@ import (
 	"time"
 )
 
+var simulating = false
+
 func main() {
-	var clicked = false
 	hook.Register(hook.MouseHold, []string{}, func(e hook.Event) {
 		if e.Button == hook.MouseMap["center"] {
 			fmt.Printf("mouse center @ %v - %v\n", e.X, e.Y)
-			clicked = !clicked
-			if clicked {
-				simulateMouseMovementAndKeyPress()
+			simulating = !simulating
+			if simulating {
+				go simulateMouseMovementAndKeyPress()
 			}
-		} else if e.Button == hook.MouseMap["right"] {
-			hook.End()
-			return
 		}
 	})
+
 	s := hook.Start()
 	defer hook.End()
 
@@ -29,15 +28,15 @@ func main() {
 }
 
 func simulateMouseMovementAndKeyPress() {
-	for {
-		// 获取当前鼠标位置
+	for simulating {
+		// Get the current mouse position
 		x, y := robotgo.Location()
 
-		// 快速水平移动鼠标，保持垂直位置不变
-		newX := x + 10 // 每次移动增加10像素
+		// Move the mouse quickly horizontally, keeping the vertical position unchanged
+		newX := x + 10 // Each move adds 10 pixels
 		robotgo.Move(newX, y)
 
-		// 每隔三秒按下 Q 键和 E 键
+		// Press Q and E every three seconds
 		select {
 		case <-time.After(3 * time.Second):
 			err := robotgo.KeyTap("e")
@@ -52,7 +51,7 @@ func simulateMouseMovementAndKeyPress() {
 			}
 			log.Default().Println("Q pressed")
 		default:
-			// 控制循环速度，以允许响应用户的鼠标移动
+			// Control loop speed to allow response to user's mouse movements
 			time.Sleep(10 * time.Millisecond)
 		}
 	}
