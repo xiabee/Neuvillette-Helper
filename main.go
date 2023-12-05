@@ -2,41 +2,74 @@ package main
 
 import (
 	"fmt"
+
 	hook "github.com/robotn/gohook"
-	"time"
 )
 
-func main() {
-	fmt.Println("Listening for mouse left button hold...")
-
-	var leftButtonHeld bool
-
-	// 注册鼠标左键按下事件
-	hook.Register(hook.MouseDown, []string{}, func(e hook.Event) {
-		if e.Button == hook.MouseMap["left"] {
-			leftButtonHeld = true
-			fmt.Println("Left mouse button pressed")
-		}
+func registerEvent() {
+	fmt.Println("--- Please press ctrl + shift + q to stop hook ---")
+	hook.Register(hook.KeyDown, []string{"q", "ctrl", "shift"}, func(e hook.Event) {
+		fmt.Println("ctrl-shift-q")
+		hook.End()
 	})
 
-	// 注册鼠标左键释放事件
-	hook.Register(hook.MouseUp, []string{}, func(e hook.Event) {
-		if e.Button == hook.MouseMap["left"] {
-			leftButtonHeld = false
-			fmt.Println("Left mouse button released")
-		}
+	fmt.Println("--- Please press w ---")
+	hook.Register(hook.KeyDown, []string{"w"}, func(e hook.Event) {
+		fmt.Println("w-")
 	})
 
-	// 启动事件监听
 	s := hook.Start()
 	<-hook.Process(s)
+}
 
+func addMouse() {
+	fmt.Println("--- Please press left mouse button to see it's position and the right mouse button to exit ---")
+	hook.Register(hook.MouseDown, []string{}, func(e hook.Event) {
+		if e.Button == hook.MouseMap["left"] {
+			fmt.Printf("mouse left @ %v - %v\n", e.X, e.Y)
+		} else if e.Button == hook.MouseMap["right"] {
+			hook.End()
+		}
+	})
+
+	s := hook.Start()
+	<-hook.Process(s)
+}
+
+// hook listen and return values using detailed examples
+func add() {
+	fmt.Println("hook add...")
+	s := hook.Start()
+	defer hook.End()
+
+	ct := false
 	for {
-		if leftButtonHeld {
-			fmt.Println("Left mouse button is being held...")
-			time.Sleep(500 * time.Millisecond) // 每半秒检查一次
-		} else {
-			time.Sleep(100 * time.Millisecond) // 减少循环频率以减少CPU使用
+		i := <-s
+
+		if i.Kind == hook.KeyHold && i.Rawcode == 59 {
+			ct = true
+		}
+
+		if ct && i.Rawcode == 12 {
+			break
 		}
 	}
+}
+
+// base hook example
+func base() {
+	fmt.Println("hook start...")
+	evChan := hook.Start()
+	defer hook.End()
+
+	for ev := range evChan {
+		fmt.Println("hook: ", ev)
+		if ev.Keychar == 'q' {
+			break
+		}
+	}
+}
+
+func main() {
+	base()
 }
