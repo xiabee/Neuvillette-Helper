@@ -7,15 +7,19 @@ Neuvillette automatic circle program.
 
 ## 使用方法
 
-待更新
+### 编译可执行文件
+
+克隆代码后在本地编译即可
 
 ```bash
 git clone https://github.com/xiabee/Neuvillette-Helper.git
 cd ./Neuvillette-Helper
 go mod download
 
-GOOS=windows GOARCH=amd64 go build . -O Neuvillette-Helper.exe
-# 在 intel 或 amd 架构下可运行
-# 直接在本机 go build . 也可
+GOOS=windows GOARCH=amd64 go build -o neuvillette.exe .
 ```
+
+
+
+不会编译的话直接去 release 页面下载最新版本可执行文件即可
 
