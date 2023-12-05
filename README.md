@@ -23,3 +23,10 @@ GOOS=windows GOARCH=amd64 go build -o neuvillette.exe .
 
 不会编译的话直接去 release 页面下载最新版本可执行文件即可
 
+
+
+### 模拟滋水
+
+* 按住鼠标中键开始转圈滋水，同时每隔三秒开始放技能；
+
+* 松开鼠标中键停止滋水
