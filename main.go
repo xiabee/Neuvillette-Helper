@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/go-vgo/robotgo"
 	hook "github.com/robotn/gohook"
 	"log"
@@ -10,6 +11,7 @@ import (
 var simulating = false
 
 func main() {
+	fmt.Println("===========|| Press the middle mouse button to start the simulation ||===========")
 	// Register a mouse event for the middle button
 	hook.Register(hook.MouseHold, []string{}, func(e hook.Event) {
 		if e.Button == hook.MouseMap["center"] {
