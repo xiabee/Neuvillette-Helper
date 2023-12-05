@@ -34,6 +34,12 @@ func main() {
 }
 
 func simulateMouseMovement() {
+	err := robotgo.MouseDown("left")
+	// Press the left mouse button
+	if err != nil {
+		return
+	}
+	log.Default().Println("Mouse left button pressed")
 	for simulating {
 		// Get the current mouse position
 		x, y := robotgo.Location()
@@ -45,12 +51,16 @@ func simulateMouseMovement() {
 		// Control the speed of the loop
 		time.Sleep(10 * time.Millisecond)
 	}
+	err = robotgo.MouseUp("left")
+	// Release the left mouse button
+	if err != nil {
+		return
+	}
+	log.Default().Println("Mouse left button released")
 }
 
 func simulateKeyPress() {
 	for simulating {
-		// Press Q and E keys every three seconds
-		time.Sleep(3 * time.Second)
 		err := robotgo.KeyTap("e")
 		if err != nil {
 			log.Default().Println("Error pressing E:", err)
@@ -66,5 +76,8 @@ func simulateKeyPress() {
 			return
 		}
 		log.Default().Println("Q pressed")
+
+		time.Sleep(3 * time.Second)
+		// Press Q and E keys every three seconds
 	}
 }
