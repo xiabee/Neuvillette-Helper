@@ -15,7 +15,7 @@ func main() {
 			fmt.Printf("mouse center @ %v - %v\n", e.X, e.Y)
 			clicked = !clicked
 			if clicked {
-				simulateFastMouseMovementAndKeyPress()
+				simulateMouseMovementAndKeyPress()
 			}
 		} else if e.Button == hook.MouseMap["right"] {
 			hook.End()
@@ -28,46 +28,32 @@ func main() {
 	<-hook.Process(s)
 }
 
-func simulateFastMouseMovementAndKeyPress() {
-	startTime := time.Now()
+func simulateMouseMovementAndKeyPress() {
 	for {
-		// 获取当前时间
-		currentTime := time.Now()
+		// 获取当前鼠标位置
+		x, y := robotgo.Location()
 
-		// 每隔半秒快速旋转视角
-		if currentTime.Sub(startTime) >= 500*time.Millisecond {
-			// 获取当前鼠标位置
-			x, y := robotgo.Location()
-
-			// 快速水平移动鼠标
-			newX := x + 50 // 增加移动的像素数
-			robotgo.MoveSmooth(newX, y, 1.0, 10.0)
-
-			// 重置开始时间
-			startTime = currentTime
-		}
+		// 快速水平移动鼠标，保持垂直位置不变
+		newX := x + 10 // 每次移动增加10像素
+		robotgo.Move(newX, y)
 
 		// 每隔三秒按下 Q 键和 E 键
-		if currentTime.Sub(startTime) >= 3*time.Second {
+		select {
+		case <-time.After(3 * time.Second):
 			err := robotgo.KeyTap("e")
 			if err != nil {
 				return
 			}
 			log.Default().Println("E pressed")
-
 			time.Sleep(100 * time.Millisecond) // 短暂延迟
-
 			err = robotgo.KeyTap("q")
 			if err != nil {
 				return
 			}
 			log.Default().Println("Q pressed")
-
-			// 重置开始时间
-			startTime = currentTime
+		default:
+			// 控制循环速度，以允许响应用户的鼠标移动
+			time.Sleep(10 * time.Millisecond)
 		}
-
-		// 控制循环速度
-		time.Sleep(10 * time.Millisecond)
 	}
 }
