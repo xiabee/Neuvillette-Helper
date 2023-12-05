@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/go-vgo/robotgo"
 	hook "github.com/robotn/gohook"
 	"log"
@@ -13,10 +12,12 @@ var simulating = false
 func main() {
 	hook.Register(hook.MouseHold, []string{}, func(e hook.Event) {
 		if e.Button == hook.MouseMap["center"] {
-			fmt.Printf("mouse center @ %v - %v\n", e.X, e.Y)
 			simulating = !simulating
 			if simulating {
+				log.Default().Println("Simulating starts")
 				go simulateMouseMovementAndKeyPress()
+			} else {
+				log.Default().Println("Simulating ends")
 			}
 		}
 	})
@@ -33,7 +34,8 @@ func simulateMouseMovementAndKeyPress() {
 		x, y := robotgo.Location()
 
 		// Move the mouse quickly horizontally, keeping the vertical position unchanged
-		newX := x + 10 // Each move adds 10 pixels
+		newX := x + 500 // Each move adds 500 pixels
+
 		robotgo.Move(newX, y)
 
 		// Press Q and E every three seconds

@@ -7,8 +7,12 @@ Neuvillette automatic circle program.
 
 ## 使用方法
 
-```
-git clone xxx
+待更新
 
+```bash
+git clone https://github.com/xiabee/Neuvillette-Helper.git
+cd ./Neuvillette-Helper
+go mod download
+go build . -O Neuvillette-Helper.exe
 ```
 
