@@ -8,6 +8,15 @@ import (
 	"time"
 )
 
+/*
+#include <windows.h>
+
+void simulateMouseMove(int x, int y) {
+    mouse_event(MOUSEEVENTF_MOVE, x, y, 0, 0);
+}
+*/
+import "C"
+
 var simulating = false
 
 func main() {
@@ -20,7 +29,7 @@ func main() {
 				log.Default().Println("Simulating starts")
 				// Start mouse movement and key press simulations in separate goroutines
 				go simulateMouseMovement()
-				go simulateKeyPress()
+				// go simulateKeyPress()
 			} else {
 				log.Default().Println("Simulating ends")
 			}
@@ -30,33 +39,26 @@ func main() {
 	// Register a mouse event for the middle button
 	hook.Register(hook.MouseHold, []string{}, handleMouseEvent)
 	hook.Register(hook.MouseDown, []string{}, handleMouseEvent)
-	// eqeqhook.Register(hook.MouseUp, []string{}, handleMouseEvent)
+	// hook.Register(hook.MouseUp, []string{}, handleMouseEvent)
 
 	// Start listening for mouse and keyboard events
 	s := hook.Start()
 	defer hook.End()
 
-	// Process events
 	<-hook.Process(s)
-	//base()
 }
 
 func simulateMouseMovement() {
 	err := robotgo.MouseDown("left")
-	// Press the left mouse button
+	// Press the left mouse buttonn
 	if err != nil {
 		return
 	}
 	log.Default().Println("Mouse left button pressed")
 	for simulating {
-		//Get the current mouse position
-		x, y := robotgo.Location()
-
-		// Move the mouse horizontally while keeping the vertical position unchanged
-		newX := x + 100 // Move 100 pixels each time
-		robotgo.Move(newX, y/2)
-
-		// Control the speed of the loop
+		//// 使用 CGO 调用移动鼠标
+		C.simulateMouseMove(1000, 0)
+		// 控制循环速度
 		time.Sleep(10 * time.Millisecond)
 	}
 	err = robotgo.MouseUp("left")
@@ -86,18 +88,5 @@ func simulateKeyPress() {
 
 		time.Sleep(3 * time.Second)
 		// Press Q and E keys every three seconds
-	}
-}
-
-func base() {
-	fmt.Println("hook start...")
-	evChan := hook.Start()
-	defer hook.End()
-
-	for ev := range evChan {
-		fmt.Println("hook: ", ev)
-		if ev.Keychar == 'q' {
-			break
-		}
 	}
 }
