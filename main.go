@@ -12,8 +12,8 @@ var simulating = false
 
 func main() {
 	fmt.Println("===========|| Press the middle mouse button to start the simulation ||===========")
-	// Register a mouse event for the middle button
-	hook.Register(hook.MouseHold, []string{}, func(e hook.Event) {
+	handleMouseEvent := func(e hook.Event) {
+		fmt.Printf("Mouse event triggered: %v, Button: %d\n", e.Kind, e.Button)
 		if e.Button == hook.MouseMap["center"] {
 			simulating = !simulating
 			if simulating {
@@ -25,7 +25,12 @@ func main() {
 				log.Default().Println("Simulating ends")
 			}
 		}
-	})
+
+	}
+	// Register a mouse event for the middle button
+	hook.Register(hook.MouseHold, []string{}, handleMouseEvent)
+	hook.Register(hook.MouseDown, []string{}, handleMouseEvent)
+	// eqeqhook.Register(hook.MouseUp, []string{}, handleMouseEvent)
 
 	// Start listening for mouse and keyboard events
 	s := hook.Start()
@@ -33,6 +38,7 @@ func main() {
 
 	// Process events
 	<-hook.Process(s)
+	//base()
 }
 
 func simulateMouseMovement() {
@@ -43,18 +49,17 @@ func simulateMouseMovement() {
 	}
 	log.Default().Println("Mouse left button pressed")
 	for simulating {
-		// Get the current mouse position
+		//Get the current mouse position
 		x, y := robotgo.Location()
 
 		// Move the mouse horizontally while keeping the vertical position unchanged
-		newX := x + 500 // Move 500 pixels each time
-		robotgo.Move(newX, y)
+		newX := x + 100 // Move 100 pixels each time
+		robotgo.Move(newX, y/2)
 
 		// Control the speed of the loop
 		time.Sleep(10 * time.Millisecond)
 	}
 	err = robotgo.MouseUp("left")
-	// Release the left mouse button
 	if err != nil {
 		return
 	}
@@ -81,5 +86,18 @@ func simulateKeyPress() {
 
 		time.Sleep(3 * time.Second)
 		// Press Q and E keys every three seconds
+	}
+}
+
+func base() {
+	fmt.Println("hook start...")
+	evChan := hook.Start()
+	defer hook.End()
+
+	for ev := range evChan {
+		fmt.Println("hook: ", ev)
+		if ev.Keychar == 'q' {
+			break
+		}
 	}
 }
