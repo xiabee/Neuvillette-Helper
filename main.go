@@ -1,102 +1,32 @@
 package main
 
 import (
-	"C"
-	"fmt"
-	"github.com/go-vgo/robotgo"
-	hook "github.com/robotn/gohook"
-	"log"
-	"time"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
 )
 
-/*
-#include <windows.h>
-
-void simulateMouseMove(int x, int y) {
-    INPUT input = {0};
-    input.type = INPUT_MOUSE;
-    input.mi.mouseData = 0;
-    input.mi.dx = x;
-    input.mi.dy = y;
-    input.mi.dwFlags = MOUSEEVENTF_MOVE;
-
-    SendInput(1, &input, sizeof(INPUT));
-}
-*/
-import "C"
-
-var simulating = false
-
 func main() {
-	fmt.Println("===========|| Press the middle mouse button to start the simulation ||===========")
-	handleMouseEvent := func(e hook.Event) {
-		fmt.Printf("Mouse event triggered: %v, Button: %d\n", e.Kind, e.Button)
-		if e.Button == hook.MouseMap["center"] {
-			simulating = !simulating
-			if simulating {
-				log.Default().Println("Simulating starts")
-				// Start mouse movement and key press simulations in separate goroutines
-				go simulateMouseMovement()
-				// go simulateKeyPress()
-			} else {
-				log.Default().Println("Simulating ends")
-			}
-		}
+	myApp := app.New()
+	myWindow := myApp.NewWindow("Neuvillette-Helper")
+	label := widget.NewLabel("Hold down the middle mouse button to start spinning!")
+	// 创建按钮
+	startButton := widget.NewButton("Start", func() {
+		// 这里添加启动项目的代码
+		simulate()
+	})
 
-	}
-	// Register a mouse event for the middle button
-	hook.Register(hook.MouseHold, []string{}, handleMouseEvent)
-	hook.Register(hook.MouseDown, []string{}, handleMouseEvent)
-	// hook.Register(hook.MouseUp, []string{}, handleMouseEvent)
+	//stopButton := widget.NewButton("Stop", func() {
+	//	// 这里添加停止项目的代码
+	//	os.Exit(1)
+	//})
 
-	// Start listening for mouse and keyboard events
-	s := hook.Start()
-	defer hook.End()
+	// 将按钮添加到窗口
+	myWindow.SetContent(container.NewVBox(
+		label,
+		startButton,
+		//stopButton,
+	))
 
-	<-hook.Process(s)
-}
-
-func simulateMouseMovement() {
-	//err := robotgo.MouseDown("left")
-	//// Press the left mouse buttonn
-	//if err != nil {
-	//	return
-	//}
-	//log.Default().Println("Mouse left button pressed")
-
-	for simulating {
-		//// 使用 CGO 调用移动鼠标
-		C.simulateMouseMove(1000, 0)
-		// 控制循环速度
-		time.Sleep(10 * time.Millisecond)
-	}
-
-	//err = robotgo.MouseUp("left")
-	//if err != nil {
-	//	return
-	//}
-	//log.Default().Println("Mouse left button released")
-}
-
-func simulateKeyPress() {
-	for simulating {
-		err := robotgo.KeyTap("e")
-		if err != nil {
-			log.Default().Println("Error pressing E:", err)
-			return
-		}
-		log.Default().Println("E pressed")
-
-		time.Sleep(100 * time.Millisecond) // Short delay
-
-		err = robotgo.KeyTap("q")
-		if err != nil {
-			log.Default().Println("Error pressing Q:", err)
-			return
-		}
-		log.Default().Println("Q pressed")
-
-		time.Sleep(3 * time.Second)
-		// Press Q and E keys every three seconds
-	}
+	myWindow.ShowAndRun()
 }
