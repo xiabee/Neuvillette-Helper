@@ -1,6 +1,7 @@
 package main
 
 import (
+	"C"
 	"fmt"
 	"github.com/go-vgo/robotgo"
 	hook "github.com/robotn/gohook"
@@ -56,23 +57,25 @@ func main() {
 }
 
 func simulateMouseMovement() {
-	err := robotgo.MouseDown("left")
-	// Press the left mouse buttonn
-	if err != nil {
-		return
-	}
-	log.Default().Println("Mouse left button pressed")
+	//err := robotgo.MouseDown("left")
+	//// Press the left mouse buttonn
+	//if err != nil {
+	//	return
+	//}
+	//log.Default().Println("Mouse left button pressed")
+
 	for simulating {
 		//// 使用 CGO 调用移动鼠标
 		C.simulateMouseMove(1000, 0)
 		// 控制循环速度
 		time.Sleep(10 * time.Millisecond)
 	}
-	err = robotgo.MouseUp("left")
-	if err != nil {
-		return
-	}
-	log.Default().Println("Mouse left button released")
+
+	//err = robotgo.MouseUp("left")
+	//if err != nil {
+	//	return
+	//}
+	//log.Default().Println("Mouse left button released")
 }
 
 func simulateKeyPress() {

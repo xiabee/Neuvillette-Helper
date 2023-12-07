@@ -17,6 +17,9 @@ cd ./Neuvillette-Helper
 go mod download
 
 GOOS=windows GOARCH=amd64 go build -o neuvillette.exe .
+# go build -ldflags "-extldflags -static" -o neuvillette.exe .
+# 静态编译，防止 CGO 异常
+
 ```
 
 
