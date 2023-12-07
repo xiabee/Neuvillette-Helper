@@ -12,7 +12,14 @@ import (
 #include <windows.h>
 
 void simulateMouseMove(int x, int y) {
-    mouse_event(MOUSEEVENTF_MOVE, x, y, 0, 0);
+    INPUT input = {0};
+    input.type = INPUT_MOUSE;
+    input.mi.mouseData = 0;
+    input.mi.dx = x;
+    input.mi.dy = y;
+    input.mi.dwFlags = MOUSEEVENTF_MOVE;
+
+    SendInput(1, &input, sizeof(INPUT));
 }
 */
 import "C"
